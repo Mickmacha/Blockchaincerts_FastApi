@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from scripts import *
 import aiomysql
 import asyncio
+from typing import List, Dict
 
 app = FastAPI()
 
@@ -13,6 +14,17 @@ DB_CONFIG = {
     "password": "lms123",
     "db": "django_lms",
 }
+
+CREATE_TABLE_QUERY = """
+CREATE TABLE IF NOT EXISTS certificates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    certificate_id INT,
+    name VARCHAR(255),
+    issuer VARCHAR(255),
+    issue_date INT
+)
+"""
+
 async def fetch_data_from_mysql(query):
     async with aiomysql.connect(**DB_CONFIG) as conn:
         async with conn.cursor(aiomysql.DictCursor) as cursor:
@@ -24,6 +36,66 @@ async def fetch_data_from_mysql(query):
 async def fetch_data():
     query = "SELECT * FROM django_lms.users_user"
     data = await fetch_data_from_mysql(query)
-    return data
+   
+    # Process the fetched data
+    processed_data = []
+    for user in data:
+        processed_user = {
+            "user_id": user["id"],
+            "username": user["username"],
+            "email": user["email"],
+            "full_name": f"{user['first_name']} {user['last_name']}",
+            # ... add more processed fields if needed
+        }
+        processed_data.append(processed_user)
+
+    return processed_data
 #command to list all mysql tables in a database
 #show tables from django_lms;
+
+
+
+async def create_cert_table():
+    
+    try:
+        async with aiomysql.conecct(**DB_CONFIG) as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(CREATE_TABLE_QUERY)
+                await conn.commit()
+                print("Table 'certificates' created successfully.")
+    except Exception as e:
+        print(f"Error creating table: {e}")
+    finally:
+        if conn.is_connected():
+            await cursor.close()
+            await conn.close()
+            
+@app.post("/issue-certificate", response_model=Dict[str, str])
+async def issue_certificate(name: str, issuer: str, issue_date: int):
+    certificate = issue_certificate(name, issuer, issue_date)
+    
+    # Create 'certificates' table if it doesn't exist
+    await create_cert_table()
+    
+    await store_certificate_data(certificate)
+    return certificate
+            
+async def store_certificate_data(certificate_data):
+    
+
+    try:
+        async with aiomysql.connect(**DB_CONFIG) as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(
+                    "INSERT INTO certificates (certificate_id, name, issuer, issue_date) VALUES (%s, %s, %s, %s)",
+                    (certificate_data["certificate_id"], certificate_data["name"], certificate_data["issuer"], certificate_data["issue_date"])
+                )
+                await conn.commit()
+                print("Certificate data stored successfully.")
+    except Exception as e:
+        print(f"Error storing certificate data: {e}")
+    finally:
+        if conn.is_connected():
+            await cursor.close()
+            await conn.close()
+            
