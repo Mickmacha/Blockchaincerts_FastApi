@@ -58,26 +58,30 @@ async def fetch_data():
 async def create_cert_table():
     
     try:
-        async with aiomysql.conecct(**DB_CONFIG) as conn:
+        async with aiomysql.connect(**DB_CONFIG) as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(CREATE_TABLE_QUERY)
                 await conn.commit()
                 print("Table 'certificates' created successfully.")
     except Exception as e:
         print(f"Error creating table: {e}")
-    finally:
-        if conn.is_connected():
-            await cursor.close()
-            await conn.close()
             
-@app.post("/issue-certificate", response_model=Dict[str, str])
-async def issue_certificate(name: str, issuer: str, issue_date: int):
+            
+@app.post("/issue-certificate")
+async def issue_certificate_endpoint(data: Dict):
+    name = data.get("name")
+    issuer = data.get("issuer")
+    issue_date = data.get("issue_date")
+    if not all([name, issuer, issue_date]):
+        return {"error": "Missing required data fields"}
+    
     certificate = issue_certificate(name, issuer, issue_date)
     
     # Create 'certificates' table if it doesn't exist
     await create_cert_table()
+    #cant currently store cert data because ill need to use get cer function for that and ill need to know index
     
-    await store_certificate_data(certificate)
+    # await store_certificate_data(certificate)
     return certificate
             
 async def store_certificate_data(certificate_data):
@@ -94,8 +98,3 @@ async def store_certificate_data(certificate_data):
                 print("Certificate data stored successfully.")
     except Exception as e:
         print(f"Error storing certificate data: {e}")
-    finally:
-        if conn.is_connected():
-            await cursor.close()
-            await conn.close()
-            

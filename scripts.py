@@ -70,5 +70,5 @@ def get_certificate(index):
         print(f"Certificate ID: {certificateId}, Name: {name}, Issuer: {issuer}, Issuer address: {issuer_address}, Issue Status:{issue_status}, Issue Date: {issue_date}")
     except Exception as e:
         print(f"Error retrieving certificate: {e}")
-# issue_certificate("Julius Randle", "New York Knicks", 198234098)
-# get_certificate(2)
+issue_certificate("Julius Kemba", "New York Knicks", 198234098)
+get_certificate(2)
