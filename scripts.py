@@ -23,7 +23,7 @@ print(f"Connected to Celo network. Address: {deployer.address}")
 
 web3.middleware_onion.inject(geth_poa_middleware, layer=0)  
 contract_abi = contract_abi
-contract_address = "0xa6590f5B5e8d19879652f204119bb3f498DA0FE2"
+contract_address = "0xAF8a7D5756D992b9E7f119d108aD36cA5cF2bb4a"
 certificate_contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 
 def get_balance(account_address, contract_address, token="CELO"):
@@ -58,17 +58,49 @@ def issue_certificate(name, issuer, issue_date):
 
     # Check if the transaction was successful
     if tx_receipt['status'] == 1:
-        print("Certificate issued successfully!")
+        # Fetch the certificate data from the blockchain using the event
+        certificate_data = fetch_certificate_data(tx_receipt['transactionHash'])
+        if certificate_data:
+            print("Certificate issued successfully!")
+            return certificate_data
+        else:
+            print("Failed to fetch certificate data.")
     else:
         print("Failed to issue certificate.")
-        
+        return None
+def fetch_certificate_data(tx_hash):
+    # Find the certificate data by searching for the event in the transaction receipt
+    tx_receipt = web3.eth.get_transaction_receipt(tx_hash)
+    for event in certificate_contract.events.CertificateIssued().process_receipt(tx_receipt):
+        certificate_data = {
+            "id": event.args.id.hex(),
+            "name": event.args.name,
+            "issuer": event.args.issuer,
+            "issuerAddress": event.args.issuerAddress,
+            "issueDate": event.args.issueDate,
+        }
+        return certificate_data
+
+    return None
 def get_certificate(index):
     try:
         certificate = certificate_contract.functions.getCertificate(index).call()
-        # certificate is a tuple containing (certificateId, name, issuer, issue_date, _)
-        certificateId, name, issuer, issuer_address, issue_date, issue_status= certificate
-        print(f"Certificate ID: {certificateId}, Name: {name}, Issuer: {issuer}, Issuer address: {issuer_address}, Issue Status:{issue_status}, Issue Date: {issue_date}")
+        # certificate is a tuple containing (certificateId, name, issuer, issue_date, issuer_address)
+        certificateId, name, issuer, issuer_address, issue_date = certificate
+        print(f"Certificate ID: {certificateId}, Name: {name}, Issuer: {issuer}, Issuer address: {issuer_address}, Issue Date: {issue_date}")
     except Exception as e:
         print(f"Error retrieving certificate: {e}")
-issue_certificate("Julius Kemba", "New York Knicks", 198234098)
-get_certificate(2)
+
+def verify_certificate(certificate_id):
+    try:
+        result = certificate_contract.functions.verifyCertificate(certificate_id).call()
+        if result:
+            print("Certificate is valid.")
+        else:
+            print("Certificate not found or invalid.")
+    except Exception as e:
+        print(f"Error verifying certificate: {e}")
+if __name__ == "__main__":
+    # Example usage
+    issue_certificate("Devin Kemba", "New York Giants", 198256998)
+    # get_certificate(0)  # Adjust the certificate index as needed

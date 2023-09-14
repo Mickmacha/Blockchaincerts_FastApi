@@ -4,9 +4,20 @@ from scripts import *
 import aiomysql
 import asyncio
 from typing import List, Dict
-
+from pydantic import BaseModel
 app = FastAPI()
+import base64
 
+
+CREATE_TABLE_QUERY = """
+CREATE TABLE IF NOT EXISTS certificates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    certificate_id VARCHAR(255),
+    name VARCHAR(255),
+    issuer VARCHAR(255),
+    issue_date INT
+)
+"""
 DB_CONFIG = {
     "host": "localhost",
     "port": 3306,
@@ -14,16 +25,17 @@ DB_CONFIG = {
     "password": "lms123",
     "db": "django_lms",
 }
+ 
+class CertificateCreateRequest(BaseModel):
+    name: str
+    issuer: str
+    issue_date: int
 
-CREATE_TABLE_QUERY = """
-CREATE TABLE IF NOT EXISTS certificates (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    certificate_id INT,
-    name VARCHAR(255),
-    issuer VARCHAR(255),
-    issue_date INT
-)
-"""
+class CertificateResponse(BaseModel):
+    certificate_id: str
+    name: str
+    issuer: str
+    issue_date: int
 
 async def fetch_data_from_mysql(query):
     async with aiomysql.connect(**DB_CONFIG) as conn:
@@ -67,32 +79,45 @@ async def create_cert_table():
         print(f"Error creating table: {e}")
             
             
-@app.post("/issue-certificate")
-async def issue_certificate_endpoint(data: Dict):
-    name = data.get("name")
-    issuer = data.get("issuer")
-    issue_date = data.get("issue_date")
+@app.post("/issue-certificate", response_model=CertificateResponse)
+async def issue_certificate_endpoint(data: CertificateCreateRequest):
+    name = data.name
+    issuer = data.issuer
+    issue_date = data.issue_date
+    
     if not all([name, issuer, issue_date]):
         return {"error": "Missing required data fields"}
     
-    certificate = issue_certificate(name, issuer, issue_date)
+    # Issue the certificate and get the certificate data
+    certificate_data = issue_certificate(name, issuer, issue_date)
+    print(certificate_data)
+    if certificate_data:
+        # Create a CertificateResponse object with the certificate data
+        certificate_response = CertificateResponse(
+            certificate_id=certificate_data["id"],
+            name=certificate_data["name"],
+            issuer=certificate_data["issuer"],
+            issue_date=certificate_data["issueDate"],
+        )
+        
+        # Create 'certificates' table if it doesn't exist
+        await create_cert_table()
+        
+        # Store certificate data
+        await store_certificate_data(certificate_response)
+        
+        # Return the CertificateResponse as the response
+        return certificate_response
     
-    # Create 'certificates' table if it doesn't exist
-    await create_cert_table()
-    #cant currently store cert data because ill need to use get cer function for that and ill need to know index
-    
-    # await store_certificate_data(certificate)
-    return certificate
-            
-async def store_certificate_data(certificate_data):
-    
+    return {"error": "Failed to issue certificate"}
 
+async def store_certificate_data(certificate_data: CertificateResponse):
     try:
         async with aiomysql.connect(**DB_CONFIG) as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(
                     "INSERT INTO certificates (certificate_id, name, issuer, issue_date) VALUES (%s, %s, %s, %s)",
-                    (certificate_data["certificate_id"], certificate_data["name"], certificate_data["issuer"], certificate_data["issue_date"])
+                    (certificate_data.certificate_id, certificate_data.name, certificate_data.issuer, certificate_data.issue_date)
                 )
                 await conn.commit()
                 print("Certificate data stored successfully.")
