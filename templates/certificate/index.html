@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond:400|Cinzel:700|Manrope:400|Poppins:400|Alex+Brush:400|Inter:700" rel='stylesheet'>
+    <link href="{{ url_for('static', path='globals.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='style.css') }}" rel="stylesheet">
+  </head>
+  <body>
+    <div class="course-professional">
+      <div class="overlap-wrapper">
+        <div class="overlap">
+          <img class="whatsapp-image" src="{{ url_for('static', path='img/whatsapp-image-2023-09-28-at-9-16-1.png') }}" >
+          <div class="group">
+            <div class="overlap-group">
+              <div class="rectangle"></div>
+              <div class="div"></div>
+              <img class="img" src="{{ url_for('static', path='img/rectangle-423.svg') }}">
+              <img class="rectangle-2" src="{{ url_for('static', path='img/rectangle-424.svg') }}">
+              <div class="ellipse-wrapper"><div class="ellipse"></div></div>
+              <div class="div-wrapper"><div class="ellipse"></div></div>
+              <div class="group-2"><div class="ellipse"></div></div>
+              <div class="group-3"><div class="ellipse"></div></div>
+            </div>
+          </div>
+          <img class="group-4" src="{{ url_for('static', path='img/group-329.png') }}"/>
+          <div class="group-5">
+            <div class="overlap-2">
+              <div class="overlap-3">
+                <div class="text-wrapper">{{ issuer_date }}</div>
+                <div class="overlap-group-wrapper">
+                  <div class="overlap-4">
+                    <div class="group-6">
+                      <div class="overlap-group-2">
+                        <div class="ellipse-2"></div>
+                        <div class="ellipse-3"></div>
+                        <div class="ellipse-4"></div>
+                        <div class="text-wrapper-2">Verified Certificate</div>
+                        <img class="element" src="{{ url_for('static', path='img/2023.png') }}" />
+                      </div>
+                    </div>
+                    <div class="group-7">
+                      <img class="star" src="{{ url_for('static', path='img/star-6.svg') }}" />
+                      <img class="star-2" src="{{ url_for('static', path='img/star-6.svg') }}" />
+                      <img class="star-3" src="{{ url_for('static', path='img/star-7.svg') }}"/>
+                      <img class="star-4" src="{{ url_for('static', path='img/star-6.svg') }}"/>
+                      <img class="star-5" src="{{ url_for('static', path='img/star-7.svg') }}"/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="overlap-5">
+                <div class="certificate-of">CERTIFICATE<br />OF ACHIEVEMENT</div>
+                <div class="text-wrapper-3">Certificate is awarded to</div>
+                <div class="group-8">
+                  <div class="overlap-group-3">
+                    <div class="text-wrapper-4">For successfully completing</div>
+                    <div class="decentralization">DECENTRALIZATION USING BLOCKCHAIN</div>
+                  </div>
+                </div>
+                <div class="text-wrapper-5">{{ name }}</div>
+                <img class="group-9" src="{{ url_for('static', path='img/group-323.png') }}"/>
+                <div class="group-10">
+                  <div class="group-11">
+                    <div class="overlap-6">
+                      <div class="overlap-group-4">
+                        <div class="text-wrapper-6">Paul McOlaka</div>
+                        <img class="vector" src="{{ url_for('static', path='img/vector-200.svg') }}"/>
+                        <img class="vector-2" src="{{ url_for('static', path='img/vector-202.svg') }}" />
+                      </div>
+                      <div class="text-wrapper-7">Executive Director</div>
+                    </div>
+                  </div>
+                  <div class="group-12">
+                    <div class="overlap-7">
+                      <div class="overlap-8">
+                        <p class="p">Director Strategy and Quality Assurance</p>
+                        <div class="text-wrapper-8">Dr. Julian Rowa</div>
+                        <img class="vector-3" src="{{ url_for('static', path='img/vector-203.svg') }}" />
+                      </div>
+                      <div class="overlap-9">
+                        <img class="vector-4" src="{{ url_for('static', path='img/vector-201.svg') }}" />
+                        <img class="vector-5" src="{{ url_for('static', path='img/vector-204.svg') }}" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="group-wrapper">
+                <div class="group-13">
+                  <img class="star" src="{{ url_for('static', path='img/star-6-1.svg') }}"/>
+                  <img class="star-2" src="{{ url_for('static', path='img/star-6-1.svg') }}"/>
+
+                  <img class="star-3" src="{{ url_for('static', path='img/star-7-1.svg') }}" />
+                  <img class="star-4" src="{{ url_for('static', path='img/star-6-1.svg') }}" />
+                  <img class="star-5" src="{{ url_for('static', path='img/star-7-1.svg') }}" />
+                </div>
+              </div>
+            </div>
+            <p class="text-wrapper-9">CERTIFICATE ID: {{ cert_id }}</p>
+            <img class="logo" src="{{ url_for('static', path='img/logo-1.png') }}" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

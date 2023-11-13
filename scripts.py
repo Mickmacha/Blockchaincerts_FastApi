@@ -102,5 +102,5 @@ def verify_certificate(certificate_id):
         print(f"Error verifying certificate: {e}")
 if __name__ == "__main__":
     # Example usage
-    issue_certificate("Devin Kemba", "New York Giants", 198256998)
+    issue_certificate("Cliff Omollo", "New York Giants", 198256998)
     # get_certificate(0)  # Adjust the certificate index as needed
