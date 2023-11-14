@@ -123,6 +123,18 @@ async def issue_certificate_endpoint(data: CertificateCreateRequest):
     
     return {"error": "Failed to issue certificate"}
 
+@app.post("/verify-certificate")
+async def verify_certificate_endpoint(certificate_id: str):
+    if not certificate_id:
+        return {"error": "Missing certificate ID"}
+    else:
+        # Verify the certificate
+        result = verify_certificate(certificate_id)
+        if result:
+            return {"message": "Certificate is valid"}
+        else:
+            return {"message": "Certificate not found or invalid"}
+
 # async def store_certificate_data(certificate_data: CertificateResponse):
 #     try:
 #         async with aiomysql.connect(**DB_CONFIG) as conn:
