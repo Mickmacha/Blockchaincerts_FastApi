@@ -23,7 +23,7 @@ print(f"Connected to Celo network. Address: {deployer.address}")
 
 web3.middleware_onion.inject(geth_poa_middleware, layer=0)  
 contract_abi = contract_abi
-contract_address = "0xAF8a7D5756D992b9E7f119d108aD36cA5cF2bb4a"
+contract_address = "0x8288be1839aA8590d2bFE8bEd98760619dc20dB0"
 certificate_contract = web3.eth.contract(address=contract_address, abi=contract_abi)
 
 def get_balance(account_address, contract_address, token="CELO"):
