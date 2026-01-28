@@ -1,6 +1,6 @@
 from web3 import Web3, Account
 import json
-from web3.middleware import geth_poa_middleware
+from web3.middleware.stWeb3_poa import geth_poa_middleware
 from web3.exceptions import ExtraDataLengthError
 from dotenv import load_dotenv
 from tqdm import tqdm
